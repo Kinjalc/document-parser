@@ -5,12 +5,34 @@ async function createSamplePatient() {
 
   try {
     const medplum = await initMedplumClient();
+
+    // Generate random 6-character alphabetical string (first letter capitalized)
+    const generateRandomString = (length: number): string => {
+      const uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const lowercaseCharacters = "abcdefghijklmnopqrstuvwxyz";
+
+      // First character is uppercase
+      let result = uppercaseCharacters.charAt(
+        Math.floor(Math.random() * uppercaseCharacters.length)
+      );
+
+      // Rest of characters are lowercase
+      for (let i = 1; i < length; i++) {
+        result += lowercaseCharacters.charAt(
+          Math.floor(Math.random() * lowercaseCharacters.length)
+        );
+      }
+      return result;
+    };
+
+    const randomString = generateRandomString(6);
+
     const patient = await medplum.createResource({
       resourceType: "Patient",
       name: [
         {
           given: ["John"],
-          family: "Doe",
+          family: `Doe ${randomString}`,
         },
       ],
     });
