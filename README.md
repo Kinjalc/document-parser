@@ -1,6 +1,6 @@
 # Document Parser
 
-A project using Medplum packages for FHIR document parsing and management.
+A sample repo using Medplum and AI SDKs for document parsing to the FHIR medical standard.
 
 ## Setup
 
