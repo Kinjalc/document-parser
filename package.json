@@ -9,8 +9,13 @@
   "license": "MIT",
   "description": "a document to FHIR resource parser",
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.1.14",
+    "@ai-sdk/openai": "^1.2.0",
+    "@anthropic-ai/sdk": "^0.39.0",
     "@medplum/core": "^4.0.2",
-    "@medplum/fhirtypes": "^4.0.2"
+    "@medplum/fhirtypes": "^4.0.2",
+    "ai": "^4.1.52",
+    "openai": "^4.86.1"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
