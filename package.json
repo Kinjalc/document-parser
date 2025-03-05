@@ -1,0 +1,20 @@
+{
+  "name": "document-parser",
+  "version": "1.0.0",
+  "scripts": {
+    "document-agent": "node --env-file=.env.local --import tsx scripts/document-agent.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "a document to FHIR resource parser",
+  "dependencies": {
+    "@medplum/core": "^4.0.2",
+    "@medplum/fhirtypes": "^4.0.2"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}
