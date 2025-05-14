@@ -3,6 +3,7 @@ import { generateObject } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { VisitNoteSchema, LabResultSchema } from '../schemas/document-schemas';
 
+// This class is responsible for parsing the document and returning the structured data.
 export class DocumentParser {
   async parseVisitNote(pdfPath: string) {
     const prompt = `You are a medical document parser. Extract structured information from this visit note and return it as a JSON object.
