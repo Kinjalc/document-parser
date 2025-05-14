@@ -1,14 +1,16 @@
 {
   "name": "document-parser",
   "version": "1.0.0",
+  "description": "A document parser for medical documents",
+  "main": "dist/document-agent.js",
   "scripts": {
-    "create-sample-patient": "node --env-file=.env.local --import tsx scripts/create-sample-patient.ts",
-    "document-agent": "node --env-file=.env.local --import tsx scripts/document-agent.ts"
+    "build": "tsc",
+    "start": "node dist/document-agent.js",
+    "document-agent": "node --env-file=.env.local --import tsx src/document-agent.ts"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "description": "a document to FHIR resource parser",
   "dependencies": {
     "@ai-sdk/anthropic": "^1.1.14",
     "@ai-sdk/openai": "^1.2.0",
