@@ -69,6 +69,8 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 
 - `npm run document-agent` - Process documents
 - `npm run chatbot` - Start the chatbot server
+- `npm run tests` - Runs test
+- `npm test src/__tests__/evaluations/document-processing.eval.ts -- --detectOpenHandles` - Runs the document-processing evaluation test
 
 ## Usage
 

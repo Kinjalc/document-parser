@@ -63,8 +63,7 @@ describe('DocumentClassifier Unit Tests', () => {
 
       (generateText as jest.Mock).mockResolvedValueOnce({ text: JSON.stringify(mockClassification) });
 
-      const result = await classifier.classifyDocument(mockPdfPath);
-      expect(result).toBe('INVALID_TYPE');
+      await expect(classifier.classifyDocument(mockPdfPath)).rejects.toThrow('Invalid enum value');
     });
 
     it('should handle AI service errors', async () => {
