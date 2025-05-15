@@ -1,59 +1,113 @@
 # Document Parser
 
-A sample repo using Medplum and AI SDKs for document parsing to the FHIR medical standard.
+A TypeScript application that processes medical documents (visit notes and lab results) and creates FHIR resources in Medplum.
 
-## Setup
+## Features
 
-This project uses npm for package management. The following packages are installed:
+- Document Classification: Automatically identifies document types (visit notes vs lab results)
+- Document Parsing: Extracts structured information from PDF documents using AI
+- FHIR Resource Creation: Creates appropriate FHIR resources in Medplum
+- Chatbot Interface: Interactive chatbot to query patient data
 
-- @medplum/core
-- @medplum/fhirtypes
-- TypeScript
-- OpenAI SDK
-- Anthropic SDK
-- Vercel AI SDK
-- Langchain
+## Project Structure
 
-## Getting Started
-
-To install dependencies:
-
-```bash
-npm install
+```
+src/
+├── services/
+│   ├── medplum/
+│   │   ├── base-service.ts      # Base class for Medplum services
+│   │   ├── encounter-service.ts # Handles encounter resource creation
+│   │   ├── diagnostic-service.ts # Handles diagnostic reports and observations
+│   │   └── fhir-service.ts      # Handles FHIR resource retrieval
+│   ├── document-classifier.ts   # Classifies document types
+│   ├── document-parser.ts       # Parses document content
+│   └── chatbot-service.ts       # Handles chatbot interactions
+├── schemas/
+│   └── document-schemas.ts      # Zod schemas for document validation
+├── types/
+│   └── index.ts                 # Type definitions
+└── document-processor.ts        # Main document processing logic
 ```
 
-### Environment Configuration
+## Prerequisites
 
-Create a `.env.local` by copying the .env.example file and assigning the appropriate environment variables.
+- Node.js (v16 or higher)
+- npm or yarn
+- Medplum account and API credentials
+- Anthropic API key for AI features
 
-## Development
+## Environment Variables
 
-This project is set up with TypeScript.
+Create a `.env.local` file with the following variables:
+
+```env
+MEDPLUM_CLIENT_ID=your_client_id
+MEDPLUM_CLIENT_SECRET=your_client_secret
+PATIENT_ID=your_patient_id
+ANTHROPIC_API_KEY=your_anthropic_api_key
+```
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd document-parser
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Build the project:
+   ```bash
+   npm run build
+   ```
 
 ### Available Scripts
 
-- `npm run create-sample-patient` - Runs a script that creates a sample patient.
-- `npm run document-agent` - Runs the document agent script that fetches and processes FHIR documents
+- `npm run build` - Build the project
+- `npm run document-agent` - Process documents
+- `npm run chatbot` - Start the chatbot server
+- `npm run test` - Run tests
+- `npm run lint` - Run linter
 
-### Project Structure
+## Usage
 
-- `documents/` - the PDF documents
-- `lib/` - Medplum library
-- `scripts/` - Utility scripts
-  - `document-agent.ts` - Script for fetching and processing FHIR documents
+### Processing Documents
 
-## Document Agent
+1. Place your PDF documents in the `documents` directory
+2. Run the document processor:
+   ```bash
+   npm run document-agent
+   ```
 
-The document agent script right now only connects to the Medplum API. You are encouraged to use any LLM APIs/SDKs (we have included four of the most common). To run it:
+The script will:
+- Classify each document
+- Parse the content
+- Create appropriate FHIR resources in Medplum
 
-First generate a patient, and take note of its ID:
+### Using the Chatbot
 
-```bash
-npm run create-sample-patient
-```
+1. Start the chatbot server:
+   ```bash
+   npm run chatbot
+   ```
 
-Then request the patient ID when running the document-agent script:
+2. The chatbot will be available at `http://localhost:3000`
 
-```bash
-npm run document-agent
-```
+3. You can ask questions about:
+   - Recent encounters
+   - Lab results
+   - Observations
+
+Example queries:
+- "What are the patient's recent lab results?"
+- "Show me the last visit note"
+- "What was the patient's blood pressure in the last visit?"
+
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
