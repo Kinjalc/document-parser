@@ -25,9 +25,6 @@ export class EncounterService extends BaseMedplumService {
             text: parsedNote.notes
           }
         ],
-        serviceProvider: {
-          reference: "Organization/your-organization-id"
-        }
       });
 
       console.log('Created Encounter:', createdEncounter.id);

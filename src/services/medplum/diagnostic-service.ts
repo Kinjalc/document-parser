@@ -81,11 +81,6 @@ export class DiagnosticService extends BaseMedplumService {
       },
       effectiveDateTime: this.formatDateToISO(parsedLab.date),
       issued: this.formatDateToISO(parsedLab.issued),
-      performer: [
-        {
-          reference: `Practitioner/${parsedLab.orderingProvider}`
-        }
-      ],
       result: observationIds.map(id => ({
         reference: `Observation/${id}`
       })),
