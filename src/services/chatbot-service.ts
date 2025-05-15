@@ -1,6 +1,6 @@
 import { generateText } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
-import { FhirService } from './fhir-service';
+import { FhirService } from './medplum/fhir-service';
 import { Patient, Encounter, DiagnosticReport, Observation } from '@medplum/fhirtypes';
 
 export class ChatbotService {

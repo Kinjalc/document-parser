@@ -1,32 +1,35 @@
-import * as fs from 'fs';
-import { DocumentType } from './types';
-import { DocumentParser } from './services/document-parser';
-import { MedplumService } from './services/medplum-service';
 import { DocumentClassifier } from './services/document-classifier';
+import { DocumentParser } from './services/document-parser';
+import { EncounterService } from './services/medplum/encounter-service';
+import { DiagnosticService } from './services/medplum/diagnostic-service';
+import { VisitNoteSchema, LabResultSchema } from './schemas/document-schemas';
+import { DocumentType } from './types';
+import { z } from 'zod';
 
 export class DocumentProcessor {
-  private documentParser: DocumentParser;
-  private medplumService: MedplumService;
-  private documentClassifier: DocumentClassifier;
+  private classifier: DocumentClassifier;
+  private parser: DocumentParser;
+  private encounterService: EncounterService;
+  private diagnosticService: DiagnosticService;
 
   constructor() {
-    this.documentParser = new DocumentParser();
-    this.medplumService = new MedplumService();
-    this.documentClassifier = new DocumentClassifier();
+    this.classifier = new DocumentClassifier();
+    this.parser = new DocumentParser();
+    this.encounterService = new EncounterService();
+    this.diagnosticService = new DiagnosticService();
   }
 
   async processDocument(pdfPath: string, patientId: string): Promise<void> {
-    // First classify the document
-    const documentType = await this.documentClassifier.classifyDocument(pdfPath);
-    console.log(`Document Type: ${documentType}`);
+    // Classify the document
+    const documentType = await this.classifier.classifyDocument(pdfPath);
 
-    // Then parse and create FHIR resources based on type
+    // Parse the document based on its type
     if (documentType === DocumentType.VISIT_NOTE) {
-      const parsedNote = await this.documentParser.parseVisitNote(pdfPath);
-      await this.medplumService.createEncounterResource(parsedNote, patientId);
+      const parsedNote = await this.parser.parseVisitNote(pdfPath) as z.infer<typeof VisitNoteSchema>;
+      await this.encounterService.createEncounterResource(parsedNote, patientId);
     } else if (documentType === DocumentType.LAB_RESULTS) {
-      const parsedLab = await this.documentParser.parseLabResults(pdfPath);
-      await this.medplumService.createDiagnosticReportResource(parsedLab, patientId);
+      const parsedLab = await this.parser.parseLabResults(pdfPath) as z.infer<typeof LabResultSchema>;
+      await this.diagnosticService.createDiagnosticReportResource(parsedLab, patientId);
     }
   }
 } 

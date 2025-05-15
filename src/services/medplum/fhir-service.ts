@@ -1,16 +1,7 @@
-import { MedplumClient } from '@medplum/core';
 import { Patient, Encounter, DiagnosticReport, Observation } from '@medplum/fhirtypes';
+import { BaseMedplumService } from './base-service';
 
-export class FhirService {
-  private medplum: MedplumClient;
-
-  constructor() {
-    this.medplum = new MedplumClient({
-      clientId: process.env.MEDPLUM_CLIENT_ID!,
-      clientSecret: process.env.MEDPLUM_CLIENT_SECRET!,
-    });
-  }
-
+export class FhirService extends BaseMedplumService {
   async getPatientData(patientId: string): Promise<{
     patient: Patient;
     encounters: Encounter[];
