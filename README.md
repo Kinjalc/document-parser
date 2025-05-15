@@ -1,6 +1,6 @@
 # Document Parser
 
-A TypeScript application that processes medical documents (visit notes and lab results) and creates FHIR resources in Medplum.
+Application that processes medical documents (visit notes and lab results) and creates FHIR resources in Medplum.
 
 ## Features
 
@@ -36,16 +36,6 @@ src/
 - Medplum account and API credentials
 - Anthropic API key for AI features
 
-## Environment Variables
-
-Create a `.env.local` file with the following variables:
-
-```env
-MEDPLUM_CLIENT_ID=your_client_id
-MEDPLUM_CLIENT_SECRET=your_client_secret
-PATIENT_ID=your_patient_id
-ANTHROPIC_API_KEY=your_anthropic_api_key
-```
 
 ## Installation
 
@@ -64,14 +54,21 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
    ```bash
    npm run build
    ```
+## Environment Variables
+
+Create a `.env.local` file with the following variables:
+
+```env
+MEDPLUM_CLIENT_ID=your_client_id
+MEDPLUM_CLIENT_SECRET=your_client_secret
+PATIENT_ID=your_patient_id
+ANTHROPIC_API_KEY=your_anthropic_api_key
+```
 
 ### Available Scripts
 
-- `npm run build` - Build the project
 - `npm run document-agent` - Process documents
 - `npm run chatbot` - Start the chatbot server
-- `npm run test` - Run tests
-- `npm run lint` - Run linter
 
 ## Usage
 
@@ -95,9 +92,7 @@ The script will:
    npm run chatbot
    ```
 
-2. The chatbot will be available at `http://localhost:3000`
-
-3. You can ask questions about:
+2. You can ask questions about:
    - Recent encounters
    - Lab results
    - Observations
