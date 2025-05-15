@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "document-agent": "node --env-file=.env.local --import tsx scripts/document-agent.ts",
+    "chatbot": "node --env-file=.env.local --import tsx scripts/chatbot.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
