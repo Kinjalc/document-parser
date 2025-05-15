@@ -1,12 +1,12 @@
 {
   "name": "document-parser",
   "version": "1.0.0",
-  "description": "A document parser for medical documents",
-  "main": "dist/document-agent.js",
+  "description": "A tool to parse medical documents and create FHIR resources",
+  "main": "src/document-processor.ts",
+  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/document-agent.js",
-    "document-agent": "node --env-file=.env.local --import tsx src/document-agent.ts"
+    "document-agent": "node --env-file=.env.local --import tsx scripts/document-agent.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
