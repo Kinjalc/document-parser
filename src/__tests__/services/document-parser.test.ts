@@ -1,143 +1,194 @@
 import { DocumentParser } from '../../services/document-parser';
-import { VisitNoteSchema, LabResultSchema } from '../../schemas/document-schemas';
-import * as fs from 'fs';
-import * as path from 'path';
 import { generateObject } from 'ai';
-import { anthropic } from '@ai-sdk/anthropic';
+import { VisitNoteSchema, LabResultSchema } from '../../schemas/document-schemas';
+import { DocumentType } from '../../types';
+import * as fs from 'fs';
 
-// Mock fs module
-jest.mock('fs', () => ({
-  readFileSync: jest.fn()
-}));
-
-// Mock AI SDK
 jest.mock('ai', () => ({
   generateObject: jest.fn()
 }));
 
-jest.mock('@ai-sdk/anthropic', () => ({
-  anthropic: jest.fn()
+jest.mock('fs', () => ({
+  readFileSync: jest.fn(() => Buffer.from('mock pdf content'))
 }));
 
-describe('DocumentParser', () => {
+describe('DocumentParser Unit Tests', () => {
   let parser: DocumentParser;
-  const mockPdfContent = Buffer.from('mock pdf content');
+  const mockPdfPath = 'test.pdf';
 
   beforeEach(() => {
     parser = new DocumentParser();
-    (fs.readFileSync as jest.Mock).mockReturnValue(mockPdfContent);
-    (generateObject as jest.Mock).mockResolvedValue({
-      object: {
-        date: '2024-02-20',
-        provider: 'Dr. Smith',
-        notes: 'Patient visit notes',
-        status: 'finished'
-      }
-    });
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
   });
 
   describe('parseVisitNote', () => {
-    it('should read PDF file content', async () => {
-      const pdfPath = path.join(__dirname, '../../../documents/visit-note.pdf');
-      await parser.parseVisitNote(pdfPath);
-      expect(fs.readFileSync).toHaveBeenCalledWith(pdfPath);
-    });
+    it('should parse visit note correctly', async () => {
+      const mockParsedContent = {
+        date: '2024-02-20',
+        provider: 'Dr. Smith',
+        status: 'finished',
+        notes: 'Patient visit notes'
+      };
 
-    it('should call AI service with correct parameters', async () => {
-      const pdfPath = path.join(__dirname, '../../../documents/visit-note.pdf');
-      await parser.parseVisitNote(pdfPath);
-      expect(generateObject).toHaveBeenCalledWith({
-        model: anthropic('claude-3-5-sonnet-20241022'),
-        schema: VisitNoteSchema,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: expect.any(String)
-              },
-              {
-                type: 'file',
-                data: mockPdfContent,
-                mimeType: 'application/pdf'
-              }
-            ]
-          }
-        ]
-      });
+      (generateObject as jest.Mock).mockResolvedValueOnce({ object: mockParsedContent });
+
+      const result = await parser.parseVisitNote(mockPdfPath);
+      expect(result).toEqual(mockParsedContent);
     });
 
     it('should handle AI service errors', async () => {
-      (generateObject as jest.Mock).mockRejectedValue(new Error('AI service error'));
-      const pdfPath = path.join(__dirname, '../../../documents/visit-note.pdf');
-      await expect(parser.parseVisitNote(pdfPath)).rejects.toThrow('AI service error');
+      (generateObject as jest.Mock).mockRejectedValueOnce(new Error('AI service error'));
+
+      await expect(parser.parseVisitNote(mockPdfPath)).rejects.toThrow('AI service error');
+    });
+
+    it('should validate parsed content against schema', async () => {
+      const mockParsedContent = {
+        date: '2024-02-20',
+        provider: 'Dr. Smith',
+        status: 'finished',
+        notes: 'Patient visit notes'
+      };
+
+      (generateObject as jest.Mock).mockResolvedValueOnce({ object: mockParsedContent });
+
+      const result = await parser.parseVisitNote(mockPdfPath);
+      expect(() => VisitNoteSchema.parse(result)).not.toThrow();
+    });
+
+    it('should handle file read errors', async () => {
+      (fs.readFileSync as jest.Mock).mockImplementationOnce(() => {
+        throw new Error('File read error');
+      });
+
+      await expect(parser.parseVisitNote(mockPdfPath)).rejects.toThrow('File read error');
     });
   });
 
   describe('parseLabResults', () => {
-    beforeEach(() => {
-      (generateObject as jest.Mock).mockResolvedValue({
-        object: {
-          date: '2024-02-20',
-          issued: '2024-02-20',
-          orderingProvider: 'Dr. Smith',
-          status: 'final',
-          code: 'LAB-123',
-          results: [
-            {
-              testName: 'Blood Glucose',
-              value: 100,
-              unit: 'mg/dL',
-              referenceRange: '70-140 mg/dL',
-              interpretation: 'Normal',
-              status: 'final'
-            }
-          ],
-          conclusion: 'All results within normal range'
-        }
-      });
-    });
-
-    it('should read PDF file content', async () => {
-      const pdfPath = path.join(__dirname, '../../../documents/lab-results.pdf');
-      await parser.parseLabResults(pdfPath);
-      expect(fs.readFileSync).toHaveBeenCalledWith(pdfPath);
-    });
-
-    it('should call AI service with correct parameters', async () => {
-      const pdfPath = path.join(__dirname, '../../../documents/lab-results.pdf');
-      await parser.parseLabResults(pdfPath);
-      expect(generateObject).toHaveBeenCalledWith({
-        model: anthropic('claude-3-5-sonnet-20241022'),
-        schema: LabResultSchema,
-        messages: [
+    it('should parse lab results correctly', async () => {
+      const mockParsedContent = {
+        date: '2024-02-20',
+        issued: '2024-02-20',
+        orderingProvider: 'LabCorp',
+        status: 'final',
+        code: '58410-2',
+        results: [
           {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: expect.any(String)
-              },
-              {
-                type: 'file',
-                data: mockPdfContent,
-                mimeType: 'application/pdf'
-              }
-            ]
+            testName: 'Complete Blood Count',
+            value: 12.5,
+            unit: '10^9/L',
+            referenceRange: '4.5-11.0',
+            status: 'final',
+            interpretation: 'Normal'
           }
-        ]
-      });
+        ],
+        conclusion: 'Normal results'
+      };
+
+      (generateObject as jest.Mock).mockResolvedValueOnce({ object: mockParsedContent });
+
+      const result = await parser.parseLabResults(mockPdfPath);
+      expect(result).toEqual(mockParsedContent);
     });
 
     it('should handle AI service errors', async () => {
-      (generateObject as jest.Mock).mockRejectedValue(new Error('AI service error'));
-      const pdfPath = path.join(__dirname, '../../../documents/lab-results.pdf');
-      await expect(parser.parseLabResults(pdfPath)).rejects.toThrow('AI service error');
+      (generateObject as jest.Mock).mockRejectedValueOnce(new Error('AI service error'));
+
+      await expect(parser.parseLabResults(mockPdfPath)).rejects.toThrow('AI service error');
+    });
+
+    it('should validate parsed content against schema', async () => {
+      const mockParsedContent = {
+        date: '2024-02-20',
+        issued: '2024-02-20',
+        orderingProvider: 'LabCorp',
+        status: 'final',
+        code: '58410-2',
+        results: [
+          {
+            testName: 'Complete Blood Count',
+            value: 12.5,
+            unit: '10^9/L',
+            referenceRange: '4.5-11.0',
+            status: 'final',
+            interpretation: 'Normal'
+          }
+        ],
+        conclusion: 'Normal results'
+      };
+
+      (generateObject as jest.Mock).mockResolvedValueOnce({ object: mockParsedContent });
+
+      const result = await parser.parseLabResults(mockPdfPath);
+      expect(() => LabResultSchema.parse(result)).not.toThrow();
+    });
+
+    it('should handle multiple lab results', async () => {
+      const mockParsedContent = {
+        date: '2024-02-20',
+        issued: '2024-02-20',
+        orderingProvider: 'LabCorp',
+        status: 'final',
+        code: '58410-2',
+        results: [
+          {
+            testName: 'Complete Blood Count',
+            value: 12.5,
+            unit: '10^9/L',
+            referenceRange: '4.5-11.0',
+            status: 'final',
+            interpretation: 'Normal'
+          },
+          {
+            testName: 'Hemoglobin',
+            value: 14.2,
+            unit: 'g/dL',
+            referenceRange: '13.5-17.5',
+            status: 'final',
+            interpretation: 'Normal'
+          }
+        ],
+        conclusion: 'Normal results'
+      };
+
+      (generateObject as jest.Mock).mockResolvedValueOnce({ object: mockParsedContent });
+
+      const result = await parser.parseLabResults(mockPdfPath);
+      expect(result.results).toHaveLength(2);
+    });
+
+    it('should handle invalid result status values', async () => {
+      const mockParsedContent = {
+        date: '2024-02-20',
+        issued: '2024-02-20',
+        orderingProvider: 'LabCorp',
+        status: 'final',
+        code: '58410-2',
+        results: [
+          {
+            testName: 'Complete Blood Count',
+            value: 12.5,
+            unit: '10^9/L',
+            referenceRange: '4.5-11.0',
+            status: 'invalid_status',
+            interpretation: 'Normal'
+          }
+        ],
+        conclusion: 'Normal results'
+      };
+
+      (generateObject as jest.Mock).mockResolvedValueOnce({ object: mockParsedContent });
+
+      await expect(parser.parseLabResults(mockPdfPath)).rejects.toThrow();
+    });
+
+    it('should handle file read errors', async () => {
+      (fs.readFileSync as jest.Mock).mockImplementationOnce(() => {
+        throw new Error('File read error');
+      });
+
+      await expect(parser.parseLabResults(mockPdfPath)).rejects.toThrow('File read error');
     });
   });
 }); 

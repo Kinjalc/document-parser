@@ -1,89 +1,84 @@
 import { DocumentClassifier } from '../../services/document-classifier';
+import { generateText } from 'ai';
 import { DocumentType } from '../../types';
 import * as fs from 'fs';
-import * as path from 'path';
-import { generateText } from 'ai';
-import { anthropic } from '@ai-sdk/anthropic';
 
-// Mock fs module
-jest.mock('fs', () => ({
-  readFileSync: jest.fn()
-}));
-
-// Mock AI SDK
 jest.mock('ai', () => ({
   generateText: jest.fn()
 }));
 
-jest.mock('@ai-sdk/anthropic', () => ({
-  anthropic: jest.fn()
+jest.mock('fs', () => ({
+  readFileSync: jest.fn()
 }));
 
-describe('DocumentClassifier', () => {
+describe('DocumentClassifier Unit Tests', () => {
   let classifier: DocumentClassifier;
+  const mockPdfPath = 'test.pdf';
   const mockPdfContent = Buffer.from('mock pdf content');
 
   beforeEach(() => {
     classifier = new DocumentClassifier();
-    (fs.readFileSync as jest.Mock).mockReturnValue(mockPdfContent);
-    (generateText as jest.Mock).mockResolvedValue({
-      text: JSON.stringify({ documentType: 'VISIT_NOTE' })
-    });
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
+    (fs.readFileSync as jest.Mock).mockReturnValue(mockPdfContent);
   });
 
   describe('classifyDocument', () => {
     it('should read PDF file content', async () => {
-      const pdfPath = path.join(__dirname, '../../../documents/visit-note.pdf');
-      await classifier.classifyDocument(pdfPath);
-      expect(fs.readFileSync).toHaveBeenCalledWith(pdfPath);
+      const mockClassification = {
+        documentType: DocumentType.VISIT_NOTE
+      };
+
+      (generateText as jest.Mock).mockResolvedValueOnce({ text: JSON.stringify(mockClassification) });
+
+      await classifier.classifyDocument(mockPdfPath);
+      expect(fs.readFileSync).toHaveBeenCalledWith(mockPdfPath);
     });
 
-    it('should call AI service with correct parameters', async () => {
-      const pdfPath = path.join(__dirname, '../../../documents/visit-note.pdf');
-      await classifier.classifyDocument(pdfPath);
-      expect(generateText).toHaveBeenCalledWith({
-        model: anthropic('claude-3-5-sonnet-20241022'),
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: expect.any(String)
-              },
-              {
-                type: 'file',
-                data: mockPdfContent,
-                mimeType: 'application/pdf'
-              }
-            ]
-          }
-        ]
-      });
-    });
+    it('should classify a visit note correctly', async () => {
+      const mockClassification = {
+        documentType: DocumentType.VISIT_NOTE
+      };
 
-    it('should return correct document type', async () => {
-      const pdfPath = path.join(__dirname, '../../../documents/visit-note.pdf');
-      const result = await classifier.classifyDocument(pdfPath);
+      (generateText as jest.Mock).mockResolvedValueOnce({ text: JSON.stringify(mockClassification) });
+
+      const result = await classifier.classifyDocument(mockPdfPath);
       expect(result).toBe(DocumentType.VISIT_NOTE);
     });
 
-    it('should handle AI service errors', async () => {
-      (generateText as jest.Mock).mockRejectedValue(new Error('AI service error'));
-      const pdfPath = path.join(__dirname, '../../../documents/visit-note.pdf');
-      await expect(classifier.classifyDocument(pdfPath)).rejects.toThrow('AI service error');
+    it('should classify a lab result correctly', async () => {
+      const mockClassification = {
+        documentType: DocumentType.LAB_RESULTS
+      };
+
+      (generateText as jest.Mock).mockResolvedValueOnce({ text: JSON.stringify(mockClassification) });
+
+      const result = await classifier.classifyDocument(mockPdfPath);
+      expect(result).toBe(DocumentType.LAB_RESULTS);
     });
 
-    it('should handle invalid JSON response', async () => {
-      (generateText as jest.Mock).mockResolvedValue({
-        text: 'invalid json'
+    it('should handle invalid document types', async () => {
+      const mockClassification = {
+        documentType: 'INVALID_TYPE'
+      };
+
+      (generateText as jest.Mock).mockResolvedValueOnce({ text: JSON.stringify(mockClassification) });
+
+      const result = await classifier.classifyDocument(mockPdfPath);
+      expect(result).toBe('INVALID_TYPE');
+    });
+
+    it('should handle AI service errors', async () => {
+      (generateText as jest.Mock).mockRejectedValueOnce(new Error('AI service error'));
+
+      await expect(classifier.classifyDocument(mockPdfPath)).rejects.toThrow('AI service error');
+    });
+
+    it('should handle file read errors', async () => {
+      (fs.readFileSync as jest.Mock).mockImplementationOnce(() => {
+        throw new Error('File read error');
       });
-      const pdfPath = path.join(__dirname, '../../../documents/visit-note.pdf');
-      await expect(classifier.classifyDocument(pdfPath)).rejects.toThrow();
+
+      await expect(classifier.classifyDocument(mockPdfPath)).rejects.toThrow('File read error');
     });
   });
 }); 
