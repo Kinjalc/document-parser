@@ -31,7 +31,7 @@ src/
 
 ## Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js (v20 or higher)
 - npm or yarn
 - Medplum account and API credentials
 - Anthropic API key for AI features
@@ -63,6 +63,7 @@ Create a `.env.local` file with the following variables:
 MEDPLUM_CLIENT_ID=your_client_id
 MEDPLUM_CLIENT_SECRET=your_client_secret
 PATIENT_ID=your_patient_id
+PRACTITIONER_ID=your_practitioner_id
 ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 
@@ -70,7 +71,7 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 
 - `npm run document-agent` - Process documents
 - `npm run chatbot` - Start the chatbot server
-- `npm run test` - Runs test
+- `npm run test` - Runs test (use -- --detectOpenHandles for cleanup and avoiding timeouts)
 - `npm test src/__tests__/evaluations/document-processing.eval.ts -- --detectOpenHandles` - Runs the document-processing evaluation test
 - `npm run test-encounter` - Run medplum encounter service locally 
 - `npm run test-diagnostic` - Run medplum diagnostic report service locally
