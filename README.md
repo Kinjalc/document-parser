@@ -72,8 +72,8 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 - `npm run chatbot` - Start the chatbot server
 - `npm run test` - Runs test
 - `npm test src/__tests__/evaluations/document-processing.eval.ts -- --detectOpenHandles` - Runs the document-processing evaluation test
-- `test-encounter` - Run medplum encounter service locally 
-- `test-diagnostic` - Run medplum diagnostic report service locally
+- `npm run test-encounter` - Run medplum encounter service locally 
+- `npm run test-diagnostic` - Run medplum diagnostic report service locally
 
 ## Usage
 
