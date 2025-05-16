@@ -5,12 +5,15 @@
   "main": "src/document-processor.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "create-sample-patient": "node --env-file=.env.local --import tsx scripts/create-sample-patient.ts",
+    "create-sample-practitioner": "node --env-file=.env.local --import tsx scripts/create-sample-practitioner.ts",
     "document-agent": "node --env-file=.env.local --import tsx scripts/document-agent.ts",
-    "chatbot": "ts-node src/chatbot.ts",
+    "chatbot": "node --env-file=.env.local --import tsx scripts/chatbot.ts",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test-encounter": "node --env-file=.env.local --import tsx scripts/test-encounter-service.ts",
+    "test-diagnostic": "NODE_ENV=local node --env-file=.env.local --import tsx scripts/test-diagnostic-service.ts"
   },
   "keywords": [],
   "author": "",

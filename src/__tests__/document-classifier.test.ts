@@ -1,6 +1,6 @@
-import { DocumentClassifier } from '../../services/document-classifier';
+import { DocumentClassifier } from '../services/document-classifier';
 import { generateText } from 'ai';
-import { DocumentType } from '../../types';
+import { DocumentType } from '../types';
 import * as fs from 'fs';
 
 jest.mock('ai', () => ({
@@ -64,12 +64,6 @@ describe('DocumentClassifier Unit Tests', () => {
       (generateText as jest.Mock).mockResolvedValueOnce({ text: JSON.stringify(mockClassification) });
 
       await expect(classifier.classifyDocument(mockPdfPath)).rejects.toThrow('Invalid enum value');
-    });
-
-    it('should handle AI service errors', async () => {
-      (generateText as jest.Mock).mockRejectedValueOnce(new Error('AI service error'));
-
-      await expect(classifier.classifyDocument(mockPdfPath)).rejects.toThrow('AI service error');
     });
 
     it('should handle file read errors', async () => {

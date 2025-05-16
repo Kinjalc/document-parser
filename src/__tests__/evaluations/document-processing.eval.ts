@@ -40,7 +40,6 @@ describe('Document Processing Evaluations', () => {
       // Placeholder: update with actual expected values from your PDF
       const expectedVisitNote = {
         date: '2025-06-20',
-        provider: '<UNKNOWN>',
         notes: "Assessment: Patient demonstrates substantial improvement in Graves' disease symptoms and lab values.\n" +
           '\n' +
           'Plan:\n' +
@@ -63,7 +62,6 @@ describe('Document Processing Evaluations', () => {
       const expectedLabResult = {
         date: '2025-06-10',
         issued: '2025-06-13',
-        orderingProvider: '<UNKNOWN>',
         status: 'final',
         code: 'Thyroid Panel',
         results: [

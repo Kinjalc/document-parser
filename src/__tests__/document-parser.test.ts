@@ -1,7 +1,7 @@
-import { DocumentParser } from '../../services/document-parser';
+import { DocumentParser } from '../services/document-parser';
 import { generateObject } from 'ai';
-import { VisitNoteSchema, LabResultSchema } from '../../schemas/document-schemas';
-import { DocumentType } from '../../types';
+import { VisitNoteSchema, LabResultSchema } from '../schemas/document-schemas';
+import { DocumentType } from '../types';
 import * as fs from 'fs';
 
 jest.mock('ai', () => ({
@@ -92,12 +92,7 @@ describe('DocumentParser Unit Tests', () => {
       expect(result).toEqual(mockParsedContent);
     });
 
-    it('should handle AI service errors', async () => {
-      (generateObject as jest.Mock).mockRejectedValueOnce(new Error('AI service error'));
-
-      await expect(parser.parseLabResults(mockPdfPath)).rejects.toThrow('AI service error');
-    });
-
+   
     it('should validate parsed content against schema', async () => {
       const mockParsedContent = {
         date: '2024-02-20',

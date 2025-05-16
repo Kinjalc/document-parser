@@ -11,14 +11,14 @@ export class DocumentParser {
 The JSON object must have the following structure:
 {
   "date": "YYYY-MM-DD", // The date of the visit in YYYY-MM-DD format
-  "provider": "string", // The name of the healthcare provider
+  "provider": "string", // The name of the healthcare provider, doctor, nurse, etc. Return the full name only without Dr. or MD annotations
   "notes": "string", // Patient's chief complaint, assessment, plan, history and additional notes
   "status": "planned" | "arrived" | "triaged" | "in-progress" | "onleave" | "finished" | "cancelled" // The status of the encounter
 }
 
 Focus on extracting:
 - Visit date (in YYYY-MM-DD format)
-- Provider name
+- Provider name (could be doctor, nurse, clinician etc. Return the full name only without any annotations)
 - Chief complaint
 - Assessment
 - Treatment plan
@@ -58,7 +58,7 @@ The JSON object must have the following structure:
 {
   "date": "YYYY-MM-DD", // The date of the lab test in YYYY-MM-DD format
   "issued": "YYYY-MM-DD", // The date when the report was issued in YYYY-MM-DD format
-  "orderingProvider": "string", // The name of the provider who ordered the test
+  "orderingProvider": "string", // The name of the provider who ordered the test. Return the full name only without Dr. or MD annotations
   "status": "registered" | "preliminary" | "final" | "amended" | "corrected" | "appended" | "cancelled" | "entered-in-error" | "unknown", // The status of the report
   "code": "string", // The name or code for the panel of lab tests
   "results": [
@@ -77,7 +77,7 @@ The JSON object must have the following structure:
 Focus on extracting:
 - Test date (in YYYY-MM-DD format)
 - Report date (in YYYY-MM-DD format)
-- Ordering provider
+- Ordering provider(could be doctor, nurse, clinician etc. Return the full name only without any annotations)
 - Report status (registered, preliminary, final, amended, corrected, appended, cancelled, entered-in-error, or unknown)
 - For each test result:
   - Test name
@@ -87,6 +87,7 @@ Focus on extracting:
   - Interpretation (normal, high, low, etc.)
   - Status (registered, preliminary, final, amended, corrected, cancelled, entered-in-error, or unknown)
 - Conclusion (The final conclusion of the lab report)
+- 
 
 Respond ONLY with the JSON object, nothing else.`;
 

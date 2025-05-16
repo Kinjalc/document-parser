@@ -50,9 +50,10 @@ src/
    npm install
    ```
 
-3. Build the project:
+3. Seed data:
    ```bash
-   npm run build
+   npm run create-sample-patient
+   npm run create-sample-practitioner
    ```
 ## Environment Variables
 
@@ -69,8 +70,10 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 
 - `npm run document-agent` - Process documents
 - `npm run chatbot` - Start the chatbot server
-- `npm run tests` - Runs test
+- `npm run test` - Runs test
 - `npm test src/__tests__/evaluations/document-processing.eval.ts -- --detectOpenHandles` - Runs the document-processing evaluation test
+- `test-encounter` - Run medplum encounter service locally 
+- `test-diagnostic` - Run medplum diagnostic report service locally
 
 ## Usage
 
